@@ -8,6 +8,13 @@ def index():
 	return render_template("index.html")
 
 
+@app.route("/recs", methods=['POST'])
+def recs():
+	input_json = request.get_json(force=True)
+	print(input_json)
+	# return render_template("index.html")
+
+
 # if os.environ.get("ON_HEROKU"):
 # 	port = os.environ.get("PORT")
 # 	app.run(port=int(port), debug=True)
