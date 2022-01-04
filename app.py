@@ -15,7 +15,7 @@ def recs():
 	print("I catch. And I store request, here it is:")
 	print(input_json)
 	print("END!")
-	# return render_template("index.html")
+	return "recs end his work"
 
 
 # if os.environ.get("ON_HEROKU"):
