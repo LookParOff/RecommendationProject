@@ -9,7 +9,7 @@ def index():
 
 
 if os.environ.get("ON_HEROKU"):
-	port = os.environ.get("port")
-	app.run(port=int(port), debug=True)
+	port = os.environ.get("PORT")
+	app.run(port=port, debug=True)
 else:
 	app.run(host="127.0.0.1", port=5000, debug=True)
