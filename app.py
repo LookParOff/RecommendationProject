@@ -11,7 +11,7 @@ def index():
 @app.route("/recs", methods=['POST'])
 def recs():
 	print("I in recs. Ready to catch your request")
-	input_json = request.get_json(force=True)
+	input_json = request.get_json()
 	print("I catch. And I store request, here it is:")
 	print(input_json)
 	print("END!")
