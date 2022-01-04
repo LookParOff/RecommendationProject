@@ -4,7 +4,7 @@
     <script>
     let xhr = new XMLHttpRequest();
     xhr.open('POST', '/recs');
-    xhr.send(JSON.stringify({a:3}));
+    xhr.send({a:3});
     xhr.onload = function() {
     console.log(xhr);
     };
