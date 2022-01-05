@@ -1,14 +1,11 @@
 from flask import Flask, render_template, request
-"""
-Backend of sending recommendations
-"""
 app = Flask(__name__)
 
 
 @app.route("/")
 def index():
     """
-    just showing black 
+    just showing black
     :return:
     """
     return render_template("index.html")
