@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+""" Sending recs to client """
 app = Flask(__name__)
 
 
