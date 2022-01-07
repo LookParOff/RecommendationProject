@@ -3,9 +3,10 @@ Sending recs to client
 funcs index and recs handle site getters
 """
 from flask import Flask, render_template, request
-from recommendation_engine import load_pivot_table, get_recommendation, get_info_of_titles
 import pandas as pd
 import numpy as np
+from recommendation_engine import load_pivot_table, get_recommendation, get_info_of_titles
+
 
 app = Flask(__name__)
 print("Loading data")
