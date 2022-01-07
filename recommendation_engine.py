@@ -93,8 +93,8 @@ def load_pivot_table():
     load pivot table from json
     :return:
     """
-    ratings = pd.read_json("../RecommendationProject/Datasets/Book/not-sparse-ratings.json")
-    titles = pd.read_json("../RecommendationProject/Datasets/Book/titles.json").sort_index()
+    ratings = pd.read_json("not-sparse-ratings.json")
+    titles = pd.read_json("titles.json").sort_index()
     pivot_table = pd.pivot_table(ratings, values="rate", index="rowIndex", columns="colIndex")
     pivot_table.columns = titles.iloc[:, 0]
     return pivot_table
