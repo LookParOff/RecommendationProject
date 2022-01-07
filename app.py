@@ -12,7 +12,7 @@ from recommendation_engine import load_pivot_table, get_recommendation, get_info
 app = Flask(__name__)
 print("Loading data")
 loaded_pivot_tab_df = load_pivot_table().fillna(0)
-description_df = pd.read_json("../RecommendationProject/Datasets/Book/description-of-books.json")
+description_df = pd.read_json("../Datasets/Book/description-of-books.json")
 print("Done!")
 
 
