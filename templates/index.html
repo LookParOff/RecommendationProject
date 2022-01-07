@@ -5,7 +5,8 @@
     let xhr = new XMLHttpRequest();
     xhr.open('POST', '/recs');
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({a:3}));
+    xhr.send(JSON.stringify({"Harry Potter and the Sorcerer's Stone (Book 1)":8,
+                             "Lord of Chaos (The Wheel of Time, Book 6)": 9}));
     xhr.onload = function() {
     console.log(xhr);
     };

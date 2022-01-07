@@ -40,8 +40,8 @@ def get_pivot_table(threshold):
     ...
     """
     start_time = time()
-    books_rate_all, booksDescribeALL = work_with_book(threshold)
-    books_rate, booksDescribe = books_rate_all[:], booksDescribeALL[:]
+    books_rate_all, books_describe_all = work_with_book(threshold)
+    books_rate, books_describe = books_rate_all[:], books_describe_all[:]
     # now we make matrix with rowIndex is User-ID and colIndex is ISBN. On intersection- rate
     print(f"Preprocess of data is over in {time() - start_time}secs")
     start_time = time()
@@ -51,12 +51,12 @@ def get_pivot_table(threshold):
     new_columns = []
     for col in matrix_of_rating.columns:
         new_columns.append(col)
-    new_columns = pd.Series(new_columns).replace(booksDescribe["ISBN"].to_list(),
-                                                 booksDescribe["Book-Title"].to_list())
+    new_columns = pd.Series(new_columns).replace(books_describe["ISBN"].to_list(),
+                                                 books_describe["Book-Title"].to_list())
     matrix_of_rating.columns = new_columns
     # keep only books with proper names:
     matrix_of_rating = \
-        matrix_of_rating.loc[:, matrix_of_rating.columns.isin(booksDescribe["Book-Title"])]
+        matrix_of_rating.loc[:, matrix_of_rating.columns.isin(books_describe["Book-Title"])]
     print(f"Pivot matrix is done in {time() - start_time} secs")
     start_time = time()
     # union the duplicate books
@@ -69,20 +69,20 @@ def get_pivot_table(threshold):
     return matrix_of_rating
 
 
-def save_pivot_table(pivotTable: pd.DataFrame):
+def save_pivot_table(pivot_table: pd.DataFrame):
     """
     saving pivot table to json
-    :param pivotTable:
+    :param pivot_table:
     :return:
     """
-    rate_rows, rate_cols = np.where(pivotTable != 0)
+    rate_rows, rate_cols = np.where(pivot_table != 0)
     temp = []
     for row, col in zip(rate_rows, rate_cols):
-        temp.append([row, col, pivotTable.iloc[row, col]])
+        temp.append([row, col, pivot_table.iloc[row, col]])
     saved_pivot_table = pd.DataFrame(temp)
     saved_pivot_table.columns = ["rowIndex", "colIndex", "rate"]
     print(saved_pivot_table)
-    saved_titles = pd.DataFrame(pivotTable.columns)
+    saved_titles = pd.DataFrame(pivot_table.columns)
     saved_pivot_table.to_json("../RecommendationProject/Datasets/Book/not-sparse-ratings.json")
     saved_titles.to_json("../RecommendationProject/Datasets/Book/titles.json")
     return saved_pivot_table, saved_titles
@@ -100,57 +100,66 @@ def load_pivot_table():
     return pivot_table
 
 
-def get_all_titles(matOfRate):
+def get_info_of_all_titles(piv_tab):
     """
     :return: dataFrame, which contain book information and book's order based on popularity
     """
-    popular_books = matOfRate.sum().sort_values(ascending=False)
-    popular_books = pd.DataFrame(popular_books)
+    popular_books = piv_tab.sum().sort_values(ascending=False)
+    popular_books = pd.DataFrame(popular_books, columns=[1])
     popular_books.reset_index(level=0, inplace=True)
     popular_books.columns = ["Book-Title", "Sum-Rate"]
 
-    dop_inf_of_books = pd.read_csv("../Datasets/book rate rec/BX_Books.csv", sep=";")
+    dop_inf_of_books = pd.read_csv("../RecommendationProject/Datasets/Book/BX_Books.csv", sep=";")
     df1 = dop_inf_of_books[dop_inf_of_books["Book-Title"].isin(popular_books["Book-Title"])][
         ['ISBN', "Book-Title", 'Book-Author', 'Image-URL-M', 'Image-URL-S']]
     df2 = df1[~df1["Book-Title"].duplicated()]
     df3 = df2.merge(popular_books)
     df3.sort_values(by="Sum-Rate", inplace=True, ascending=False)
     df3.drop("Sum-Rate", axis=1, inplace=True)
-    # df3.to_json("D:\\output.json", orient="table")
+    df3.to_json("D:\\description-of-books.json", orient="table")
     return df3
 
 
-def correlation_recommendation(ratingDf, title):
+def get_info_of_titles(titles, description_df) -> pd.DataFrame:
+    """
+    return information of passed titles
+    :param titles:
+    :param description_df:
+    :return:
+    """
+    info_df = description_df[np.isin(description_df["Book-Title"], titles)]
+    return info_df
+
+
+def correlation_recommendation(rating_df, title):
     """
     by one title return top 5 of most correlation
-    :param ratingDf:
+    :param rating_df:
     :param title:
     :return:
     """
-    book = ratingDf.loc[:, title]
-    recs = ratingDf.corrwith(book).sort_values(ascending=False)
+    book = rating_df.loc[:, title]
+    recs = rating_df.corrwith(book).sort_values(ascending=False)
     return recs[1:5].index
 
 
-def get_recommendation(pivotTableDF: pd.DataFrame, rate: np.array):
+def get_recommendation(pivot_table_df: pd.DataFrame, rate: np.array):
     """
     :returns list of the most recommended books
     """
     rate_indexes = np.where(rate >= 7)[0]
-    read_books = pivotTableDF.columns[rate_indexes].to_numpy()
-    print("Read books:", read_books)
+    read_books = pivot_table_df.columns[rate_indexes].to_numpy()
+    print("\nRead books:", read_books)
 
     start_time = time()
     recommended_items = np.array([])
     for index in rate_indexes:
-        title = pivotTableDF.columns[index]
+        title = pivot_table_df.columns[index]
         recommended_items = np.append(recommended_items,
-                                      correlation_recommendation(pivotTableDF, title))
+                                      correlation_recommendation(pivot_table_df, title))
     print("Recs was formed in", round(time() - start_time, 2), "secs")
 
     recommended_items = recommended_items[~np.isin(recommended_items, read_books)]
-    print("Recommended books", recommended_items)
-    print()
     return recommended_items
 
 
@@ -162,4 +171,4 @@ if __name__ == "__main__":
     # save_pivot_table(piv_tab_df)
 
     loaded_pivot_tab_df = load_pivot_table().fillna(0)
-    recses = get_recommendation(loaded_pivot_tab_df, loaded_pivot_tab_df.loc[1463, :])
+    # recses = get_recommendation(loaded_pivot_tab_df, loaded_pivot_tab_df.loc[1463, :])
