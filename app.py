@@ -3,6 +3,7 @@ Sending recs to client
 funcs index and recs handle site getters
 """
 from flask import Flask, render_template, request
+from time import time
 import pandas as pd
 import numpy as np
 from recommendation_engine import load_pivot_table, get_recommendation, get_info_of_titles
@@ -42,6 +43,7 @@ def recs():
     input: json of ratings of man. output: json of recommended books, like jsons for Andrew
     :return:
     """
+    start_time = time()
     print("I in recs. Ready to catch your request")
     input_json = request.get_json()  # force=True
     print("I caught. And I store request, here it is:\n", input_json)
@@ -51,8 +53,9 @@ def recs():
     rates = vector_all_ratings(loaded_pivot_tab_df, input_df)
     print("Rates:", rates)
     titles = get_recommendation(loaded_pivot_tab_df, rates)
-    print("titles", titles)
+    print("Titles:", titles)
     output_df = get_info_of_titles(titles, description_df)
-    print("output_df", output_df)
-    print("END!")
-    return output_df.to_dict()
+    print("output_df:", output_df)
+    output_json = output_df.to_json(orient="table")
+    print(f"Done in {round(time() - start_time, 1)} secs")
+    return output_json
