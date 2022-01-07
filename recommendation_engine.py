@@ -83,8 +83,8 @@ def save_pivot_table(pivot_table: pd.DataFrame):
     saved_pivot_table.columns = ["rowIndex", "colIndex", "rate"]
     print(saved_pivot_table)
     saved_titles = pd.DataFrame(pivot_table.columns)
-    saved_pivot_table.to_json("../Datasets/Book/not-sparse-ratings.json")
-    saved_titles.to_json("../Datasets/Book/titles.json")
+    saved_pivot_table.to_json("../RecommendationProject/Datasets/Book/not-sparse-ratings.json")
+    saved_titles.to_json("../RecommendationProject/Datasets/Book/titles.json")
     return saved_pivot_table, saved_titles
 
 
@@ -93,8 +93,8 @@ def load_pivot_table():
     load pivot table from json
     :return:
     """
-    ratings = pd.read_json("../Datasets/Book/not-sparse-ratings.json")
-    titles = pd.read_json("../Datasets/Book/titles.json").sort_index()
+    ratings = pd.read_json("../RecommendationProject/Datasets/Book/not-sparse-ratings.json")
+    titles = pd.read_json("../RecommendationProject/Datasets/Book/titles.json").sort_index()
     pivot_table = pd.pivot_table(ratings, values="rate", index="rowIndex", columns="colIndex")
     pivot_table.columns = titles.iloc[:, 0]
     return pivot_table
@@ -109,7 +109,7 @@ def get_info_of_all_titles(piv_tab):
     popular_books.reset_index(level=0, inplace=True)
     popular_books.columns = ["Book-Title", "Sum-Rate"]
 
-    dop_inf_of_books = pd.read_csv("../Datasets/Book/BX_Books.csv", sep=";")
+    dop_inf_of_books = pd.read_csv("../RecommendationProject/Datasets/Book/BX_Books.csv", sep=";")
     df1 = dop_inf_of_books[dop_inf_of_books["Book-Title"].isin(popular_books["Book-Title"])][
         ['ISBN', "Book-Title", 'Book-Author', 'Image-URL-M', 'Image-URL-S']]
     df2 = df1[~df1["Book-Title"].duplicated()]
