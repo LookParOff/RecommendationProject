@@ -53,6 +53,14 @@ def recs():
     rates = vector_all_ratings(loaded_pivot_tab_df, input_df)
     print("Rates:", rates)
     titles = get_recommendation(loaded_pivot_tab_df, rates)
+    if len(titles) == 0:
+        titles = ["The Lovely Bones: A Novel", "The Da Vinci Code", "The Secret Life of Bees",
+         "The Red Tent (Bestselling Backlist)",
+         "The Nanny Diaries: A Novel",
+         "Harry Potter and the Sorcerer's Stone (Harry Potter (Paperback))",
+         "Bridget Jones's Diary",
+         "Harry Potter and the Chamber of Secrets (Book 2)", "A Painted House", "Life of Pi",
+         "Wild Animus"]
     print("Titles:", titles)
     output_df = get_info_of_titles(titles, description_df)
     print("output_df:", output_df)
