@@ -1,0 +1,12 @@
+version: '3'
+services:
+  flask:
+    build: .
+    container_name: res_pr_cont
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=True
+      - PORT=5000
+    ports:
+      - 5000:5000
+    command: flask run --host=0.0.0.0

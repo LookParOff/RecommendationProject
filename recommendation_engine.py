@@ -83,8 +83,8 @@ def save_pivot_table(pivot_table: pd.DataFrame):
     saved_pivot_table.columns = ["rowIndex", "colIndex", "rate"]
     print(saved_pivot_table)
     saved_titles = pd.DataFrame(pivot_table.columns)
-    saved_pivot_table.to_json("../RecommendationProject/Datasets/Book/not-sparse-ratings.json")
-    saved_titles.to_json("../RecommendationProject/Datasets/Book/titles.json")
+    saved_pivot_table.to_json("not-sparse-ratings.json")
+    saved_titles.to_json("titles.json")
     return saved_pivot_table, saved_titles
 
 
@@ -140,7 +140,7 @@ def correlation_recommendation(rating_df, title):
     """
     book = rating_df.loc[:, title]
     recs = rating_df.corrwith(book).sort_values(ascending=False)
-    return recs[1:5].index
+    return recs[1:7].index
 
 
 def get_recommendation(pivot_table_df: pd.DataFrame, rate: np.array):
@@ -158,7 +158,7 @@ def get_recommendation(pivot_table_df: pd.DataFrame, rate: np.array):
         recommended_items = np.append(recommended_items,
                                       correlation_recommendation(pivot_table_df, title))
     print("Recs was formed in", round(time() - start_time, 2), "secs")
-
+    recommended_items = np.unique(recommended_items)
     recommended_items = recommended_items[~np.isin(recommended_items, read_books)]
     return recommended_items
 
@@ -166,9 +166,10 @@ def get_recommendation(pivot_table_df: pd.DataFrame, rate: np.array):
 if __name__ == "__main__":
     # Harry Potter and the Sorcerer's Stone (Harry Potter (Paperback)) 2093
     # Lord of Chaos (The Wheel of Time, Book 6)
-
-    # piv_tab_df = getPivotTable(7)
+    print("start")
+    # piv_tab_df = get_pivot_table(25)
+    # print(piv_tab_df.shape)
     # save_pivot_table(piv_tab_df)
 
-    loaded_pivot_tab_df = load_pivot_table().fillna(0)
+    # loaded_pivot_tab_df = load_pivot_table().fillna(0)
     # recses = get_recommendation(loaded_pivot_tab_df, loaded_pivot_tab_df.loc[1463, :])

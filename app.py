@@ -13,7 +13,7 @@ app = Flask(__name__)
 print("Loading data")
 loaded_pivot_tab_df = load_pivot_table().fillna(0)
 description_df = pd.read_json("description-of-books.json")
-print("Done!")
+print("Done! Shape is:", loaded_pivot_tab_df.shape)
 
 
 def vector_all_ratings(piv_tab, rates_titles):
@@ -36,7 +36,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/recs", methods=['POST'])
+@app.route("/recs/books", methods=['POST'])
 def recs():
     """
     function handle answering on post request.
